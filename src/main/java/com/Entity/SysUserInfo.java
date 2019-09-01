@@ -32,5 +32,9 @@ public class SysUserInfo implements Serializable {
     private String userAdrCity;
     @Column(columnDefinition = "varchar(11) comment '用户电话号码'")
     private String telNum;
+    @Column(columnDefinition = "date comment '注册日期'")
+    private Date sinupDate;
+    @Column(columnDefinition = "date comment '修改日期'")
+    private Date modifyDate;
 
 }
