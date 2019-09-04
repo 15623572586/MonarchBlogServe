@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CitiesDao extends JpaRepository<Cities,String> {
     List<Cities> findAllByProvinceId(String provinceId);
+    Cities findByCityId(String cityId);
 }

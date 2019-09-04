@@ -36,5 +36,8 @@ public class SysUserInfo implements Serializable {
     private Date sinupDate;
     @Column(columnDefinition = "date comment '修改日期'")
     private Date modifyDate;
+    @Column(columnDefinition = "varchar(1) comment '取消标识'")
+    private String deleteTag;
+
 
 }

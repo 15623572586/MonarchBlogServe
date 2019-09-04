@@ -26,22 +26,35 @@ public class LoginService {
     @Autowired
     private CitiesDao citiesDao;
 
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public String login(String userId , String password){
-        SysUserInfo sysUserInfo = sysUserInfoDao.findAllByUserId(userId);
+    public HashMap<String,Object> login(String userId , String password){
+        SysUserInfo sysUserInfo = sysUserInfoDao.findByUserIdAndDeleteTag(userId,"0");
+        HashMap<String,Object> returnMap = new HashMap<>();
         if (sysUserInfo==null){
-            return "该用户不存在！";
+            returnMap.put("error","该用户不存在");
         }
         if (password.equals(sysUserInfo.getUserPassword())){
-            return "0";
+            HashMap userInfo = new HashMap();
+            userInfo.put("userId", userId);
+            userInfo.put("userName",sysUserInfo.getUserName());
+            returnMap.put("userInfo",userInfo);
         }else {
-            return "密码错误";
+            returnMap.put("error","密码错误");
         }
+        return returnMap;
     }
 
     public String sinup(HashMap<String,Object> sinupMap) throws ParseException {
-        SysUserInfo sysUserInfo = new SysUserInfo();
+        SysUserInfo sysUserInfo;
+        String action = (String) sinupMap.get("action");
+        if (action.equals("sinup")) {
+            sysUserInfo = sysUserInfoDao.findByUserId((String) sinupMap.get("userId"));
+            if (sysUserInfo != null) {
+                return "该用户名已被注册，请重新输入！";
+            }
+        }
+        sysUserInfo = new SysUserInfo();
         sysUserInfo.setUserId((String) sinupMap.get("userId"));
         sysUserInfo.setUserName(sinupMap.get("userName").toString());
         sysUserInfo.setUserPassword(sinupMap.get("userPassword").toString());
@@ -55,7 +68,7 @@ public class LoginService {
             sysUserInfo.setUserSex(sinupMap.get("userSex").toString());
         }
         if (StringUtils.isNotBlank(sinupMap.get("userBirthDate").toString())){
-            sysUserInfo.setUserBirthDate(simpleDateFormat.parse(sinupMap.get("userBirthDate").toString()));
+            sysUserInfo.setUserBirthDate(dateFormat.parse(sinupMap.get("userBirthDate").toString()));
         }
         if (StringUtils.isNotBlank(sinupMap.get("userAdrProv").toString())){
             sysUserInfo.setUserAdrProv(sinupMap.get("userAdrProv").toString());
@@ -63,6 +76,7 @@ public class LoginService {
         if (StringUtils.isNotBlank(sinupMap.get("userAdrCity").toString())){
             sysUserInfo.setUserAdrCity(sinupMap.get("userAdrCity").toString());
         }
+        sysUserInfo.setDeleteTag("0");
         sysUserInfo.setSinupDate(new Date());
         if (sysUserInfoDao.save(sysUserInfo)!=null){
             return "0";

@@ -5,6 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
@@ -15,17 +17,29 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+    /**
+     *
+     * @param loginData
+     * @return
+     */
     @PostMapping(value = "login")
-    public String login(@RequestBody HashMap<String,String> loginData){
-        System.out.println(loginData);
+    public HashMap<String,Object> login(@RequestBody HashMap<String,String> loginData,HttpServletRequest httpServletRequest){
+        HashMap<String,Object> loginStatus = new HashMap<>();
         if (loginData!=null){
             String userId = loginData.get("loginName");
             String password = loginData.get("password");
             if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(password)) {
-                return loginService.login(userId, password);
+                loginStatus = loginService.login(userId, password);
+                if (loginStatus.get("error")==null || StringUtils.isBlank(loginStatus.get("error").toString())) {
+                    HttpSession httpSession = httpServletRequest.getSession(true); //新建session对象
+                    httpSession.setAttribute("userId", userId);
+                }
+                return loginStatus;
             }
+        }else {
+            loginStatus.put("error","参数缺失");
         }
-        return "登陆失败";
+        return loginStatus;
     }
 
     @PostMapping(value = "sinup")
