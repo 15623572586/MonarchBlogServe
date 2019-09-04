@@ -33,6 +33,7 @@ public class LoginService {
         HashMap<String,Object> returnMap = new HashMap<>();
         if (sysUserInfo==null){
             returnMap.put("error","该用户不存在");
+            return returnMap;
         }
         if (password.equals(sysUserInfo.getUserPassword())){
             HashMap userInfo = new HashMap();

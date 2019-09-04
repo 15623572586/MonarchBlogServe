@@ -99,7 +99,9 @@ public class UserManageMentService {
             }
             userInfo.put("province",province);
             userInfo.put("city",city);
-            userInfo.put("birthDate",StringUtils.isNotBlank(sysUserInfo.getUserBirthDate().toString())?dateFormat.parse(dateFormat.format(sysUserInfo.getUserBirthDate())):"--");
+            if (sysUserInfo.getUserBirthDate()!=null && StringUtils.isNotBlank(sysUserInfo.getUserBirthDate().toString())) {
+                userInfo.put("birthDate", dateFormat.parse(dateFormat.format(sysUserInfo.getUserBirthDate())));
+            }
             List<HashMap<String,String>> Provinces = loginService.getProvinces();
             userInfo.put("Provinces",Provinces);
         }
