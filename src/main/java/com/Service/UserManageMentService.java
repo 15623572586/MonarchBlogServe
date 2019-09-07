@@ -54,7 +54,9 @@ public class UserManageMentService {
                         city += cities.getCityName();
                     }
                     userInfo.put("city",city);
-                    userInfo.put("birthDate",StringUtils.isNotBlank(sysUserInfo.getUserBirthDate().toString())?dateFormat.parse(dateFormat.format(sysUserInfo.getUserBirthDate())):"--");
+                    if(sysUserInfo.getUserBirthDate()!=null && StringUtils.isNotBlank(sysUserInfo.getUserBirthDate().toString())) {
+                        userInfo.put("birthDate", dateFormat.parse(dateFormat.format(sysUserInfo.getUserBirthDate())));
+                    }
                     allUserInfoList.add(userInfo);
                 }
 
