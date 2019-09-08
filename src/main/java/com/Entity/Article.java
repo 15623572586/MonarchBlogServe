@@ -20,11 +20,11 @@ public class Article implements Serializable {
     private String userId;
     @Column(columnDefinition = "varchar(40) comment '文章标题'")
     private String title;
-    @Column(columnDefinition = "varchar(5000) not null comment '文章内容'")
+    @Column(columnDefinition = "varchar(20000) not null comment '文章内容'")
     private String content;
-    @Column(columnDefinition = "varchar(5000) comment '评论数量'")
+    @Column(columnDefinition = "varchar(6) comment '评论数量'")
     private String commentCount;
-    @Column(columnDefinition = "varchar(5000) comment '阅读数量'")
+    @Column(columnDefinition = "varchar(6) comment '阅读数量'")
     private String readCount;
     @Column(columnDefinition = "timestamp not null comment '文章发表时间'")
     private Date createTime;
