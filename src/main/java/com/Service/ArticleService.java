@@ -1,20 +1,34 @@
 package com.Service;
 
 import com.Dao.ArticleDao;
+import com.Dao.ImageUrlDao;
 import com.Entity.Article;
+import com.Entity.ImageUrl;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import sun.net.ftp.FtpProtocolException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ArticleService {
     @Autowired
     private ArticleDao articleDao;
+    @Autowired
+    private ImageUrlDao imageUrlDao;
+
+    @Value("${web.upload.path}")
+    private String uploadPath;
+    @Value("${imgUrl}")
+    private String imgUrl;
 
     SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public String saveArticle(HashMap<String,String> articleData){
@@ -64,5 +78,39 @@ public class ArticleService {
             articleMap.put("error","查询错误，未查询到随笔记录！");
         }
         return articleMap;
+    }
+
+    /**
+     * 上传图片到图片服务器，并返回图片在服务器的地址
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public Map<String,Object> imgUpload(MultipartFile file) throws IOException, FtpProtocolException {
+        Map<String, Object> uploadImgStatusMap = new HashMap<>();
+
+        String fileName = file.getOriginalFilename();
+        String filename1 = fileName.substring(fileName.lastIndexOf("."));
+        fileName = UUID.randomUUID()+filename1;
+        fileName = fileName.replace("-", "");
+        File newFile = new File(uploadPath + fileName);
+        FileOutputStream fos = new FileOutputStream(newFile);
+        FileInputStream fs = (FileInputStream) file.getInputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = fs.read(buffer)) != -1) {
+            fos.write(buffer, 0, len);
+        }
+        fos.close();
+        fs.close();
+        uploadImgStatusMap.put("code", 200);
+        uploadImgStatusMap.put("msg", "上传成功");
+        uploadImgStatusMap.put("url", imgUrl + fileName);
+        //将上传到服务器的图片地址保存到数据库，方便管理
+        ImageUrl imageUrl = new ImageUrl();
+        imageUrl.setUuid(imageUrl.getUuid());
+        imageUrl.setImageUrl(imgUrl+fileName);
+        imageUrlDao.save(imageUrl);
+        return uploadImgStatusMap;
     }
 }
