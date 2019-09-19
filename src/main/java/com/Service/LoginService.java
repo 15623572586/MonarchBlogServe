@@ -46,16 +46,18 @@ public class LoginService {
         return returnMap;
     }
 
-    public String sinup(HashMap<String,Object> sinupMap) throws ParseException {
-        SysUserInfo sysUserInfo;
-        String action = (String) sinupMap.get("action");
-        if (action.equals("sinup")) {
-            sysUserInfo = sysUserInfoDao.findByUserId((String) sinupMap.get("userId"));
-            if (sysUserInfo != null) {
+    public String sinupOrModify(HashMap<String,Object> sinupMap) throws ParseException {
+        SysUserInfo sysUserInfo = sysUserInfoDao.findByUserId((String) sinupMap.get("userId"));
+        if (sysUserInfo!=null) {
+            if (sinupMap.get("action").equals("sinup")) {
                 return "该用户名已被注册，请重新输入！";
+            } else {
+                sysUserInfo.setModifyDate(new Date());
             }
+        }else {
+            sysUserInfo = new SysUserInfo();
+            sysUserInfo.setSinupDate(new Date());
         }
-        sysUserInfo = new SysUserInfo();
         sysUserInfo.setUserId((String) sinupMap.get("userId"));
         sysUserInfo.setUserName(sinupMap.get("userName").toString());
         sysUserInfo.setUserPassword(sinupMap.get("userPassword").toString());
@@ -68,21 +70,26 @@ public class LoginService {
         if (StringUtils.isNotBlank(sinupMap.get("userSex").toString())){
             sysUserInfo.setUserSex(sinupMap.get("userSex").toString());
         }
-        if (StringUtils.isNotBlank(sinupMap.get("userBirthDate").toString())){
+        if (sinupMap.get("userBirthDate")!=null && StringUtils.isNotBlank(sinupMap.get("userBirthDate").toString())){
             sysUserInfo.setUserBirthDate(dateFormat.parse(sinupMap.get("userBirthDate").toString()));
         }
-        if (StringUtils.isNotBlank(sinupMap.get("userAdrProv").toString())){
-            sysUserInfo.setUserAdrProv(sinupMap.get("userAdrProv").toString());
+        if (sinupMap.get("userAdrProv")!=null){
+            HashMap<String,String> userAdrProv = (HashMap<String, String>) sinupMap.get("userAdrProv");
+            sysUserInfo.setUserAdrProv(userAdrProv.get("Id"));
         }
-        if (StringUtils.isNotBlank(sinupMap.get("userAdrCity").toString())){
-            sysUserInfo.setUserAdrCity(sinupMap.get("userAdrCity").toString());
+        if (sinupMap.get("userAdrCity")!=null){
+            HashMap<String,String> userAdrCity = (HashMap<String, String>) sinupMap.get("userAdrCity");
+            sysUserInfo.setUserAdrCity(userAdrCity.get("Name"));
         }
         sysUserInfo.setDeleteTag("0");
-        sysUserInfo.setSinupDate(new Date());
         if (sysUserInfoDao.save(sysUserInfo)!=null){
             return "0";
         }
-        return "注册失败！";
+        if (sinupMap.get("action").equals("sinup")) {
+            return "注册失败！";
+        }else {
+            return "信息修改失败！";
+        }
     }
 
     public List<HashMap<String,String>> getProvinces() {

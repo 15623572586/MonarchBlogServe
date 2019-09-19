@@ -53,8 +53,8 @@ public class UserManageMentService {
                         city = provinces.getProvinceName();
                     }
                     if (StringUtils.isNotBlank(sysUserInfo.getUserAdrCity()) && !sysUserInfo.getUserAdrCity().equals("--")){
-                        Cities cities = citiesDao.findByCityId(sysUserInfo.getUserAdrCity());
-                        city += cities.getCityName();
+//                        Cities cities = citiesDao.findByCityId(sysUserInfo.getUserAdrCity());
+                        city = sysUserInfo.getUserAdrCity();
                     }
                     userInfo.put("city",city);
                     if(sysUserInfo.getUserBirthDate()!=null && StringUtils.isNotBlank(sysUserInfo.getUserBirthDate().toString())) {
@@ -90,17 +90,19 @@ public class UserManageMentService {
             userInfo.put("userName",StringUtils.isNotBlank(sysUserInfo.getUserName())?sysUserInfo.getUserName():"--");
             userInfo.put("realName",StringUtils.isNotBlank(sysUserInfo.getRealName())?sysUserInfo.getRealName():"--");
             userInfo.put("sex",StringUtils.isNotBlank(sysUserInfo.getUserSex())?sysUserInfo.getUserSex():"--");
-            userInfo.put("createDate",StringUtils.isNotBlank(sysUserInfo.getSinupDate().toString())?dateFormat.parse(sysUserInfo.getSinupDate().toString()):"--");
+            userInfo.put("createDate",(sysUserInfo.getSinupDate()!=null&&StringUtils.isNotBlank(sysUserInfo.getSinupDate().toString()))?dateFormat.parse(sysUserInfo.getSinupDate().toString()):"--");
             userInfo.put("telNum",StringUtils.isNotBlank(sysUserInfo.getTelNum())?sysUserInfo.getTelNum():"--");
-            String province = "--";
-            String city = "--";
+            HashMap<String,String> province = new HashMap<>();
+            HashMap<String,String> city = new HashMap<>();
             if (StringUtils.isNotBlank(sysUserInfo.getUserAdrProv()) && !sysUserInfo.getUserAdrProv().equals("--")){
                 Provinces provinces = provincesDao.findByProvinceId(sysUserInfo.getUserAdrProv());
-                province = provinces.getProvinceName();
+                province.put("Id",provinces.getProvinceId());
+                province.put("Name",provinces.getProvinceName());
             }
             if (StringUtils.isNotBlank(sysUserInfo.getUserAdrCity()) && !sysUserInfo.getUserAdrCity().equals("--")){
-                Cities cities = citiesDao.findByCityId(sysUserInfo.getUserAdrCity());
-                city = cities.getCityName();
+//                Cities cities = citiesDao.findByCityId(sysUserInfo.getUserAdrCity());
+                city.put("Id","--");
+                city.put("Name",sysUserInfo.getUserAdrCity());
             }
             userInfo.put("province",province);
             userInfo.put("city",city);

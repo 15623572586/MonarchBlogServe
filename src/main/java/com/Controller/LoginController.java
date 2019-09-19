@@ -46,7 +46,7 @@ public class LoginController {
     public String sinup(@RequestBody HashMap<String,Object> sinupMap) throws ParseException {
         if (sinupMap!=null && StringUtils.isNotBlank((String) sinupMap.get("userId"))){
             System.out.println(sinupMap);
-            String saveStatus = loginService.sinup(sinupMap);
+            String saveStatus = loginService.sinupOrModify(sinupMap);
             return saveStatus;
         }
         return "参数缺失，注册失败！";
