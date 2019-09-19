@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class UserManageMentService {
     private CitiesDao citiesDao;
     @Autowired
     private LoginService loginService;
+    @Autowired
+    private ArticleService articleService;
 
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -111,5 +114,23 @@ public class UserManageMentService {
             userInfo.put("error","获取该用户信息失败");
         }
         return userInfo;
+    }
+    public HashMap<String,Object> getUserInfoAndArticle(String userId){
+        HashMap<String ,Object> personalInfoAndArticleMap = new HashMap<>();
+        //获取用户信息
+        SysUserInfo sysUserInfo = sysUserInfoDao.findByUserId(userId);
+        if (sysUserInfo!=null) {
+            Double blogAge = 0.0;
+            Date today = new Date();
+            blogAge = (today.getTime()*1.0-sysUserInfo.getSinupDate().getTime())/(24*60*60*1000)/(30*12);
+            personalInfoAndArticleMap.put("userName", StringUtils.isNotBlank(sysUserInfo.getUserName()) ? sysUserInfo.getUserName() : "--");
+            personalInfoAndArticleMap.put("birthDay",sysUserInfo.getUserBirthDate()!=null?sysUserInfo.getUserBirthDate():"--");
+            personalInfoAndArticleMap.put("blogAge",String.format("%.1f",blogAge));
+        }
+        //获取文章
+        HashMap<String,Object> articleList = articleService.getArticleList();
+        personalInfoAndArticleMap.put("articleList",articleList.get("articleList"));
+        personalInfoAndArticleMap.put("blogCount",articleList.get("total"));
+        return personalInfoAndArticleMap;
     }
 }

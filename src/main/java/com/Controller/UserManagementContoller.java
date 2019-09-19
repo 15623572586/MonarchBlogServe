@@ -27,6 +27,13 @@ public class UserManagementContoller {
             return "1";
         }
     }
+
+    /**
+     * 获取一个用户的信息
+     * @param userIdData
+     * @return
+     * @throws ParseException
+     */
     @GetMapping(value = "getOneUserInfo")
     public HashMap<String,Object> getOneUserInfo(@RequestParam HashMap<String,String> userIdData) throws ParseException {
         HashMap<String,Object> returnMap = new HashMap<>();
@@ -39,5 +46,25 @@ public class UserManagementContoller {
             returnMap.put("error","获取该用户信息失败");
         }
         return returnMap;
+    }
+
+    /**
+     * 点击查看文章时左侧栏显示笔者相关信息
+     * @param userIdMap
+     * @return
+     */
+    @GetMapping(value = "getUserInfoAndArticle")
+    public HashMap<String,Object> getUserInfoAndArticle(@RequestParam HashMap<String,String> userIdMap){
+        HashMap<String,Object> personalInfoAndArticleMap = new HashMap<>();
+        if (userIdMap!=null) {
+            if (StringUtils.isNotBlank(userIdMap.get("userId"))) {
+                personalInfoAndArticleMap = userManageMentService.getUserInfoAndArticle(userIdMap.get("userId"));
+            }else {
+                personalInfoAndArticleMap.put("error","用户ID获取失败：未获取到用户ID！");
+            }
+        }else {
+            personalInfoAndArticleMap.put("error","参数获取失败：服务器未获取到查询参数！");
+        }
+        return personalInfoAndArticleMap;
     }
 }
