@@ -130,7 +130,9 @@ public class UserManageMentService {
             personalInfoAndArticleMap.put("blogAge",String.format("%.1f",blogAge));
         }
         //获取文章
-        HashMap<String,Object> articleList = articleService.getArticleList();
+        HashMap<String,String> userIdMap = new HashMap<>();
+        userIdMap.put("userId",userId);
+        HashMap<String,Object> articleList = articleService.getArticleList(userIdMap);
         personalInfoAndArticleMap.put("articleList",articleList.get("articleList"));
         personalInfoAndArticleMap.put("blogCount",articleList.get("total"));
         return personalInfoAndArticleMap;

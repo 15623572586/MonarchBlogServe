@@ -28,8 +28,8 @@ public class ArticleController {
         return "1";
     }
     @GetMapping(value = "getArticleList")
-    public HashMap<String,Object> getArticleList(){
-        return articleService.getArticleList();
+    public HashMap<String,Object> getArticleList(@RequestParam HashMap<String,String> userIdMap){
+        return articleService.getArticleList(userIdMap);
     }
 
     /**

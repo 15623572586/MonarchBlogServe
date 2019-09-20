@@ -52,10 +52,16 @@ public class ArticleService {
     }
 
 
-    public HashMap<String,Object> getArticleList(){
+    public HashMap<String,Object> getArticleList(HashMap<String,String> userIdMap){
         HashMap<String,Object> articleMap = new HashMap<>();
         List<HashMap<String,Object>> articleList = new ArrayList<>();
-        List<Article> articles = articleDao.findAll();
+        List<Article> articles = new ArrayList<>();
+
+        if (userIdMap==null || userIdMap.isEmpty()) {
+             articles = articleDao.findAll();
+        }else {
+            articles = articleDao.findAllByUserIdOrderByCreateTimeDesc(userIdMap.get("userId"));
+        }
         Integer total = 0;
         if (articles!=null && articles.size()>0){
             for (Article article : articles) {
