@@ -22,8 +22,8 @@ public class Article implements Serializable {
     private String title;
     @Column(columnDefinition = "varchar(20000) not null comment '文章内容'")
     private String content;
-    @Column(columnDefinition = "varchar(6) comment '评论数量'")
-    private String commentCount;
+    @Column(columnDefinition = "varchar(6) comment '点赞数量'")
+    private String surportCount;
     @Column(columnDefinition = "varchar(6) comment '阅读数量'")
     private String readCount;
     @Column(columnDefinition = "timestamp not null comment '文章发表时间'")
