@@ -43,6 +43,8 @@ public class ArticleService {
                 article.setTitle(title);
             }
             article.setContent(content);
+            article.setReadCount("0");
+            article.setSurportCount("0");
 //            article.setCreateTime(article.getCreateTime());
             if (articleDao.save(article)!=null){
                 return "0";
@@ -72,7 +74,7 @@ public class ArticleService {
                     articleData.put("title",StringUtils.isNotBlank(article.getTitle())?article.getTitle():"");
                     articleData.put("content",article.getContent());
                     articleData.put("surportCount",article.getSurportCount());
-                    articleData.put("readCount",article.getReadCount());
+//                    articleData.put("readCount",article.getReadCount());
                     articleData.put("createTime",timeFormat.format(article.getCreateTime()));
                     articleList.add(articleData);
                     total++;
@@ -84,6 +86,29 @@ public class ArticleService {
             articleMap.put("error","查询错误，未查询到随笔记录！");
         }
         return articleMap;
+    }
+
+    public HashMap<String,String> modifyReadCount(String articleId){
+        HashMap<String,String> returnMap = new HashMap<>();
+        Article article = articleDao.findByArticleId(articleId);
+        Boolean status = false;
+        Integer count = 0;
+        if(article!=null){
+            count = Integer.parseInt(article.getReadCount())+1;
+            article.setReadCount(count.toString());
+            status = articleDao.save(article)!=null;
+        }else {
+            returnMap.put("status","1");
+            returnMap.put("msg","查询文章失败");
+        }
+        if (status){
+            returnMap.put("status","0");
+            returnMap.put("readCount",count.toString());
+        }else {
+            returnMap.put("status","1");
+            returnMap.put("msg","更新文章阅读次数失败");
+        }
+        return returnMap;
     }
 
     /**

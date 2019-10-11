@@ -10,4 +10,5 @@ public interface ArticleDao extends JpaRepository<Article,String> {
     @Query(nativeQuery = true,value = "SELECT * FROM article ORDER BY create_time DESC ")
     List<Article> findAll();
     List<Article> findAllByUserIdOrderByCreateTimeDesc(String userId);
+    Article findByArticleId(String articleId);
 }

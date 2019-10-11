@@ -1,6 +1,7 @@
 package com.Controller;
 
 import com.Service.ArticleService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,24 @@ public class ArticleController {
     @GetMapping(value = "getArticleList")
     public HashMap<String,Object> getArticleList(@RequestParam HashMap<String,String> userIdMap){
         return articleService.getArticleList(userIdMap);
+    }
+
+    /**
+     * 修改文章的阅读次数
+     * @param articleInfoMap
+     * @return
+     */
+    @PostMapping(value = "/modifyReadCount")
+    public HashMap<String,String> modifyReadCount(@RequestBody HashMap<String,Object> articleInfoMap){
+        HashMap<String,String> readCountMap = new HashMap<>();
+        if (articleInfoMap!=null){
+            String articleId = (String) articleInfoMap.get("articleId");
+            Boolean flag = StringUtils.isNotBlank(articleId);
+            if (flag){
+                readCountMap = articleService.modifyReadCount(articleId);
+            }
+        }
+        return readCountMap;
     }
 
     /**
