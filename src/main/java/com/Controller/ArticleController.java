@@ -52,6 +52,16 @@ public class ArticleController {
     }
 
     /**
+     * 文章点赞统计
+     * @param surportMap
+     * @return
+     */
+    @PostMapping(value = "/surportArticle")
+    public HashMap<String,String> surportArticle(@RequestBody HashMap<String,String> surportMap){
+        return articleService.surportArticle(surportMap);
+    }
+
+    /**
      * @PostMapping(value = "imgUpload")
      * public Map<String ,Object> imgUpload(@RequestBody HttpServletRequest httpServletRequest) throws IOException {
      *上面那种接收 图片的的方式会报错 不支持 。。。。

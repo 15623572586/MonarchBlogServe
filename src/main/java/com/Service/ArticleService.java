@@ -2,8 +2,10 @@ package com.Service;
 
 import com.Dao.ArticleDao;
 import com.Dao.ImageUrlDao;
+import com.Dao.StatisticSurportDao;
 import com.Entity.Article;
 import com.Entity.ImageUrl;
+import com.Entity.StatisticSurport;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,8 @@ public class ArticleService {
     private ArticleDao articleDao;
     @Autowired
     private ImageUrlDao imageUrlDao;
+    @Autowired
+    private StatisticSurportDao statisticSurportDao;
 
     @Value("${web.upload.path}")
     private String uploadPath;
@@ -88,6 +92,11 @@ public class ArticleService {
         return articleMap;
     }
 
+    /**
+     * 更新统计阅读数量
+     * @param articleId
+     * @return
+     */
     public HashMap<String,String> modifyReadCount(String articleId){
         HashMap<String,String> returnMap = new HashMap<>();
         Article article = articleDao.findByArticleId(articleId);
@@ -107,6 +116,55 @@ public class ArticleService {
         }else {
             returnMap.put("status","1");
             returnMap.put("msg","更新文章阅读次数失败");
+        }
+        return returnMap;
+    }
+
+    /**
+     * 文章点赞统计
+     * @param surportMap
+     * @return
+     */
+    public HashMap<String,String> surportArticle(HashMap<String,String> surportMap){
+        HashMap<String,String> returnMap = new HashMap<>();
+        Boolean isNotNull = surportMap!=null;
+        if (isNotNull){
+            String userId = surportMap.get("userId");
+            String articleId = surportMap.get("articleId");
+            if (StringUtils.isNotBlank(userId)&& StringUtils.isNotBlank(articleId)){
+                StatisticSurport statisticSurport = statisticSurportDao.findAllByArticleIdAndUserId(articleId,userId);
+                if (statisticSurport==null) {
+                    Article article = articleDao.findByArticleId(articleId);
+                    if (article != null) {
+                        Integer surportCount = Integer.parseInt(article.getSurportCount()) + 1;
+                        article.setSurportCount(surportCount.toString());
+                        if (articleDao.save(article) != null) {
+                            statisticSurport = new StatisticSurport();
+                            statisticSurport.setArticleId(articleId);
+                            statisticSurport.setUserId(userId);
+                            if (statisticSurportDao.save(statisticSurport) != null) {
+                                returnMap.put("status", "0");
+                                returnMap.put("msg", "点赞成功");
+                            } else {
+                                returnMap.put("status", "1");
+                                returnMap.put("msg", "点赞失败");
+                            }
+                        } else {
+                            returnMap.put("status", "1");
+                            returnMap.put("msg", "点赞失败");
+                        }
+                    } else {
+                        returnMap.put("status", "1");
+                        returnMap.put("msg", "查询文章失败");
+                    }
+                }else {
+                    returnMap.put("status","1");
+                    returnMap.put("msg","您很欣赏这篇文章，不能重复点赞哦！");
+                }
+            }else {
+                returnMap.put("status","1");
+                returnMap.put("msg","用户名或文章获取失败");
+            }
         }
         return returnMap;
     }
