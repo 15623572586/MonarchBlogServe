@@ -144,6 +144,7 @@ public class ArticleService {
                             statisticSurport.setUserId(userId);
                             if (statisticSurportDao.save(statisticSurport) != null) {
                                 returnMap.put("status", "0");
+                                returnMap.put("surportCount", surportCount.toString());
                                 returnMap.put("msg", "点赞成功");
                             } else {
                                 returnMap.put("status", "1");
