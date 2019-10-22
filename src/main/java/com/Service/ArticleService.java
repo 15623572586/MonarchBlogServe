@@ -78,7 +78,7 @@ public class ArticleService {
                     articleData.put("title",StringUtils.isNotBlank(article.getTitle())?article.getTitle():"");
                     articleData.put("content",article.getContent());
                     articleData.put("surportCount",article.getSurportCount());
-//                    articleData.put("readCount",article.getReadCount());
+                    articleData.put("readCount",article.getReadCount());
                     articleData.put("createTime",timeFormat.format(article.getCreateTime()));
                     articleList.add(articleData);
                     total++;
